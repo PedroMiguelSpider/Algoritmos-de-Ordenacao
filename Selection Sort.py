@@ -1,43 +1,55 @@
 import random
 import time
- 
-# Vantagens:
-# - Simples de implementar e entender.
-# - Faz o número mínimo de trocas (no máximo n-1), bom quando escrever na memória é caro.
-# - Ordena in-place: não precisa de memória extra (O(1) auxiliar).
-# - Tempo de execução previsível: não varia conforme a ordem inicial dos dados.
-# - Não usa recursão, então não há risco de estouro de pilha.
-# Desvantagens:
-# - Sempre faz N(N-1)/2 comparações: O(n²) no melhor, médio e pior caso.
-# - Muito lento para listas grandes.
-# - Não é estável: elementos iguais podem trocar de ordem relativa.
-# - Não se beneficia de listas já ordenadas ou parcialmente ordenadas.
- 
- 
+
+# Algoritmo: Selection Sort (Ordenação por Seleção)
+# O Selection Sort divide a lista em duas partes: a parte ordenada (início) e a
+# parte não ordenada (resto). A cada iteração, ele busca o menor elemento da
+# parte não ordenada e o troca com o primeiro elemento da parte não ordenada.
+# Esse processo se repete até que toda a lista esteja ordenada.
+
+# VANTAGENS:
+# 1. Fácil de entender e implementar.
+# 2. Funciona bem para listas pequenas.
+# 3. Baixo consumo de memória (ordenação "in-place", altera a lista no mesmo lugar).
+# 4. Realiza o número mínimo de trocas (swaps): no máximo O(n).
+
+# DESVANTAGENS:
+# 1. Complexidade de tempo O(n²) em todos os casos (melhor, médio e pior).
+# 2. Torna-se ineficiente para listas grandes.
+# 3. Não é um algoritmo "estável".
+
 def selection_sort(lista):
-    if not lista:
-        return lista
     n = len(lista)
-    for i in range(n - 1):
-        menor = i
-        for j in range(i + 1, n):
-            if lista[j] < lista[menor]:
-                menor = j
-        if menor != i:
-            lista[i], lista[menor] = lista[menor], lista[i]
+    
+    # Percorre a lista até o penúltimo elemento
+    for j in range(n - 1):
+        # Assume que o menor elemento é o atual (primeiro da parte não ordenada)
+        min_index = j
+        
+        # Busca o menor elemento no restante da lista (parte não ordenada)
+        for i in range(j + 1, n):
+            if lista[i] < lista[min_index]:
+                min_index = i
+                
+        # Se encontrou um elemento menor que o atual, realiza a troca (swap)
+        if lista[j] > lista[min_index]:
+            aux = lista[j]
+            lista[j] = lista[min_index]
+            lista[min_index] = aux
+            
     return lista
- 
- 
+
 if __name__ == "__main__":
-    TAMANHO = 100000
-    lista = [random.randint(0, 100_000) for _ in range(TAMANHO)]
- 
-    print(f"Ordenando 100.000 elementos...")
- 
+    lista = []
+    for _ in range(100000):
+        lista.append(random.randint(0, 100000))
+
     inicio = time.time()
     selection_sort(lista)
     fim = time.time()
- 
-    print(f"Lista com 100.000 elementos ordenada em {fim - inicio:.2f} segundos")
-    print("Ordenada corretamente:", all(lista[i] <= lista[i + 1] for i in range(len(lista) - 1)))
-    print("Primeiros 100 elementos:", lista[:100])
+
+    print(f"Tempo de execução: {fim - inicio:.2f} segundos")
+    print("\nPrimeiros 100 elementos:", lista[:100])
+    print("Últimos 100 elementos:", lista[-100:])
+   
+    # print(lista)
