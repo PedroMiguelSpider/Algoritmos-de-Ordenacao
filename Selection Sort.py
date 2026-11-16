@@ -20,18 +20,11 @@ import time
 
 def selection_sort(lista):
     n = len(lista)
-    
-    # Percorre a lista até o penúltimo elemento
     for j in range(n - 1):
-        # Assume que o menor elemento é o atual (primeiro da parte não ordenada)
         min_index = j
-        
-        # Busca o menor elemento no restante da lista (parte não ordenada)
         for i in range(j + 1, n):
             if lista[i] < lista[min_index]:
                 min_index = i
-                
-        # Se encontrou um elemento menor que o atual, realiza a troca (swap)
         if lista[j] > lista[min_index]:
             aux = lista[j]
             lista[j] = lista[min_index]
