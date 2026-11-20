@@ -1,17 +1,6 @@
 import random
 import time
-
-# Algoritmo: Heap Sort
-# Transforma a lista em uma árvore binária (heap). Remove o maior elemento (raiz)
-# repetidamente, colocando-o no final da lista, e reorganiza o Heap.
-
-# VANTAGENS:
-# 1. Complexidade garantida de O(n log n) em todos os casos.
-# 2. É "in-place" (usa pouca memória extra).
-
-# DESVANTAGENS:
-# 1. É um algoritmo mais difícil de entender e implementar.
-# 2. Não é um algoritmo "estável".
+import os
 
 def heapify(lista, n, i):
     maior = i
@@ -28,41 +17,66 @@ def heapify(lista, n, i):
 
 def heap_sort(lista):
     n = len(lista)
+
     for i in range(n // 2 - 1, -1, -1):
         heapify(lista, n, i)
+
     for i in range(n - 1, 0, -1):
         lista[i], lista[0] = lista[0], lista[i]
         heapify(lista, i, 0)
+        
     return lista
 
 if __name__ == "__main__":
-    lista = []
-    for _ in range(100):
-        lista.append(random.randint(0, 1000))
+    arquivo_aleatorio = "numeros_aleatorios.txt"
+    arquivo_ordenado = "numeros_ordenados.txt"
+    qtd_numeros = 100000
 
-    # Salvar os números aleatórios no primeiro arquivo TXT
-    with open("numeros_aleatorios.txt", "w") as arquivo_entrada:
-        for numero in lista:
-            arquivo_entrada.write(f"{numero}\n")
-    print("Arquivo 'numeros_aleatorios.txt' criado com sucesso!")
+    if os.path.exists(arquivo_aleatorio):
+        backup_nome = f"backup_{arquivo_aleatorio}"
+        try:
+            if os.path.exists(backup_nome):
+                os.remove(backup_nome) 
+            os.rename(arquivo_aleatorio, backup_nome)
+            print(f"⚠️ Arquivo '{arquivo_aleatorio}' já existia. Um backup foi criado: '{backup_nome}'")
+        except Exception as e:
+            print(f"Erro ao tentar criar backup do arquivo existente: {e}")
 
-    # Lendo o arquivo de volta para garantir que a ordenação seja feita a partir dele
+    lista = [random.randint(0, 100000) for _ in range(qtd_numeros)]
+    
+    try:
+        with open(arquivo_aleatorio, "w") as arquivo_entrada:
+            for numero in lista:
+                arquivo_entrada.write(f"{numero}\n")
+        print(f"Arquivo '{arquivo_aleatorio}' criado com sucesso!")
+    except IOError as e:
+        print(f"Erro de permissão ao criar o arquivo: {e}. Verifique as permissões da pasta.")
+        exit(1)
+
+    print("\nLendo os números do arquivo...")
     lista_para_ordenar = []
-    with open("numeros_aleatorios.txt", "r") as arquivo_entrada:
-        for linha in arquivo_entrada:
-            lista_para_ordenar.append(int(linha.strip()))
+    try:
+        with open(arquivo_aleatorio, "r") as arquivo_entrada:
+            for linha in arquivo_entrada:
+                if linha.strip(): 
+                    lista_para_ordenar.append(int(linha.strip()))
+        print(f"Sucesso! {len(lista_para_ordenar)} números carregados na memória.")
+    except Exception as e:
+        print(f"Erro ao ler o arquivo: {e}")
+        exit(1)
 
-    # Ordenar usando o Heap Sort
+    print("\nIniciando a ordenação com Heap Sort...")
     inicio = time.time()
     lista_ordenada = heap_sort(lista_para_ordenar)
     fim = time.time()
+    
+    print(f"⏱️ Tempo de execução do Heap Sort: {fim - inicio:.4f} segundos")
 
-    # Salvar os números ordenados no novo arquivo TXT
-    with open("numeros_ordenados.txt", "w") as arquivo_saida:
-        for numero in lista_ordenada:
-            arquivo_saida.write(f"{numero}\n")
-    print("Arquivo 'numeros_ordenados.txt' criado com sucesso!")
-
-    print(f"\nTempo de execução do Heap Sort: {fim - inicio:.5f} segundos")
-    print("\nPrimeiros 10 números ordenados:", lista_ordenada[:10])
-    print("Últimos 10 números ordenados:", lista_ordenada[-10:])
+    print(f"\nSalvando números ordenados...")
+    try:
+        with open(arquivo_ordenado, "w") as arquivo_saida:
+            for numero in lista_ordenada:
+                arquivo_saida.write(f"{numero}\n")
+        print(f"Arquivo '{arquivo_ordenado}' criado com sucesso!")
+    except IOError as e:
+        print(f"Erro de permissão ao salvar o arquivo ordenado: {e}")
